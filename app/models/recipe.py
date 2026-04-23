@@ -20,27 +20,57 @@ class Recipe(db.Model):
 
     @classmethod
     def create(cls, **kwargs):
-        new_recipe = cls(**kwargs)
-        db.session.add(new_recipe)
-        db.session.commit()
-        return new_recipe
+        """新增一筆食譜記錄"""
+        try:
+            new_recipe = cls(**kwargs)
+            db.session.add(new_recipe)
+            db.session.commit()
+            return new_recipe
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating recipe: {e}")
+            return None
 
     @classmethod
     def get_all(cls):
-        return cls.query.all()
+        """取得所有食譜記錄"""
+        try:
+            return cls.query.all()
+        except Exception as e:
+            print(f"Error getting all recipes: {e}")
+            return []
 
     @classmethod
     def get_by_id(cls, recipe_id):
-        return cls.query.get(recipe_id)
+        """取得單筆食譜記錄"""
+        try:
+            return cls.query.get(recipe_id)
+        except Exception as e:
+            print(f"Error getting recipe by id: {e}")
+            return None
 
     def update(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        db.session.commit()
+        """更新食譜記錄"""
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating recipe: {e}")
+            return False
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """刪除食譜記錄"""
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting recipe: {e}")
+            return False
 
 class Collection(db.Model):
     __tablename__ = 'collections'
@@ -53,24 +83,54 @@ class Collection(db.Model):
 
     @classmethod
     def create(cls, **kwargs):
-        new_collection = cls(**kwargs)
-        db.session.add(new_collection)
-        db.session.commit()
-        return new_collection
+        """新增一筆收藏記錄"""
+        try:
+            new_collection = cls(**kwargs)
+            db.session.add(new_collection)
+            db.session.commit()
+            return new_collection
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating collection: {e}")
+            return None
 
     @classmethod
     def get_all(cls):
-        return cls.query.all()
+        """取得所有收藏記錄"""
+        try:
+            return cls.query.all()
+        except Exception as e:
+            print(f"Error getting all collections: {e}")
+            return []
 
     @classmethod
     def get_by_id(cls, collection_id):
-        return cls.query.get(collection_id)
+        """取得單筆收藏記錄"""
+        try:
+            return cls.query.get(collection_id)
+        except Exception as e:
+            print(f"Error getting collection by id: {e}")
+            return None
 
     def update(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        db.session.commit()
+        """更新收藏記錄"""
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating collection: {e}")
+            return False
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """刪除收藏記錄"""
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting collection: {e}")
+            return False

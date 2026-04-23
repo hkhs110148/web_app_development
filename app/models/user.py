@@ -1,7 +1,8 @@
 from . import db
 from datetime import datetime
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -18,24 +19,54 @@ class User(db.Model):
 
     @classmethod
     def create(cls, **kwargs):
-        new_user = cls(**kwargs)
-        db.session.add(new_user)
-        db.session.commit()
-        return new_user
+        """新增一筆使用者記錄"""
+        try:
+            new_user = cls(**kwargs)
+            db.session.add(new_user)
+            db.session.commit()
+            return new_user
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating user: {e}")
+            return None
 
     @classmethod
     def get_all(cls):
-        return cls.query.all()
+        """取得所有使用者記錄"""
+        try:
+            return cls.query.all()
+        except Exception as e:
+            print(f"Error getting all users: {e}")
+            return []
 
     @classmethod
     def get_by_id(cls, user_id):
-        return cls.query.get(user_id)
+        """取得單筆使用者記錄"""
+        try:
+            return cls.query.get(user_id)
+        except Exception as e:
+            print(f"Error getting user by id: {e}")
+            return None
 
     def update(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        db.session.commit()
+        """更新使用者記錄"""
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating user: {e}")
+            return False
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """刪除使用者記錄"""
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting user: {e}")
+            return False

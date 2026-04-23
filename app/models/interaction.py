@@ -13,24 +13,54 @@ class Review(db.Model):
 
     @classmethod
     def create(cls, **kwargs):
-        new_review = cls(**kwargs)
-        db.session.add(new_review)
-        db.session.commit()
-        return new_review
+        """新增一筆評價與留言記錄"""
+        try:
+            new_review = cls(**kwargs)
+            db.session.add(new_review)
+            db.session.commit()
+            return new_review
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error creating review: {e}")
+            return None
 
     @classmethod
     def get_all(cls):
-        return cls.query.all()
+        """取得所有評價記錄"""
+        try:
+            return cls.query.all()
+        except Exception as e:
+            print(f"Error getting all reviews: {e}")
+            return []
 
     @classmethod
     def get_by_id(cls, review_id):
-        return cls.query.get(review_id)
+        """取得單筆評價記錄"""
+        try:
+            return cls.query.get(review_id)
+        except Exception as e:
+            print(f"Error getting review by id: {e}")
+            return None
 
     def update(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-        db.session.commit()
+        """更新評價記錄"""
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error updating review: {e}")
+            return False
 
     def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        """刪除評價記錄"""
+        try:
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting review: {e}")
+            return False
